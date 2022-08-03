@@ -59,7 +59,20 @@ sap.ui.define([
                 oViewModel.getProperty("/shareSendEmailSubject"),
                 oViewModel.getProperty("/shareSendEmailMessage")
             );
+        },
+
+        onUpdateStockObjects : function () { 
+
+            
+
+        },
+    
+        onUnlistObjects : function () {
+
         }
+    
+
+
     });
 
 });

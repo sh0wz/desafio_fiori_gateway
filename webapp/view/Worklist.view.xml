@@ -7,7 +7,8 @@
     <semantic:SemanticPage
         id="page"
         headerPinnable="false"
-        toggleHeaderOnTitleClick="false">
+        toggleHeaderOnTitleClick="false"
+        showFooter="true">
 
         <semantic:titleHeading>
             <Title
@@ -19,6 +20,7 @@
             <Table
                 id="table"
                 width="auto"
+                mode="MultiSelect"
                 items="{
                     path: '/SolicitacaoSet',
                     sorter: {
@@ -56,8 +58,20 @@
                     <Column id="nameColumn">
                         <Text text="{i18n>tableNameColumnTitle}" id="nameColumnTitle"/>
                     </Column>
-                    <Column id="unitNumberColumn" hAlign="End">
+                    <Column>
+                        <Text text="Código Produgo"/>
+                    </Column>
+                    <Column>
+                        <Text text="Descrição Produto"/>
+                    </Column>
+                    <Column id="unitNumberColumn" >
                         <Text text="{i18n>tableUnitNumberColumnTitle}" id="unitNumberColumnTitle"/>
+                    </Column>
+                    <Column>
+                        <Text text="Preço Novo"/>
+                    </Column>
+                    <Column hAlign="End">
+                        <Text text="Data e Hora da Solicitação"/>
                     </Column>
                 </columns>
 
@@ -68,11 +82,22 @@
                         <cells>
                             <ObjectIdentifier
                                 title="{IdSolicitacao}"/>
+                            <ObjectIdentifier
+                                title="{CodProduto}"/>
+                            <ObjectIdentifier
+                                title="{DescProduto}"/>
                             <ObjectNumber
                                 number="{
                                     path: 'PrecoAtual',
                                     formatter: '.formatter.numberUnit'
                                 }" />
+                            <ObjectNumber
+                                number="{
+                                    path: 'PrecoNovo',
+                                    formatter: '.formatter.numberUnit'
+                                }" />
+                            <ObjectIdentifier
+                                title="{DataHoraSolicitacao}"/>
                         </cells>
                     </ColumnListItem>
                 </items>
@@ -82,7 +107,12 @@
         <semantic:sendEmailAction>
             <semantic:SendEmailAction id="shareEmail" press=".onShareEmailPress"/>
         </semantic:sendEmailAction>
-
+        <semantic:positiveAction>
+			<semantic:PositiveAction text="Aprovar" press=".onUpdateStockObjects"/>
+		</semantic:positiveAction>
+		<semantic:negativeAction>
+			<semantic:NegativeAction text="Rejeitar" press=".onUnlistObjects"/>
+		</semantic:negativeAction>
     </semantic:SemanticPage>
 
 </mvc:View>
