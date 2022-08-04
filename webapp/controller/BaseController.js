@@ -61,15 +61,6 @@ sap.ui.define([
             );
         },
 
-        onUpdateStockObjects : function () { 
-
-            
-
-        },
-    
-        onUnlistObjects : function () {
-
-        }
     
 
 

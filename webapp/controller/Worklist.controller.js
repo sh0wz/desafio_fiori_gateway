@@ -33,6 +33,9 @@ sap.ui.define([
                 tableNoDataText : this.getResourceBundle().getText("tableNoDataText")
             });
             this.setModel(oViewModel, "worklistView");
+        },
+
+        onAfterRendering : function () {
 
         },
 
@@ -62,6 +65,18 @@ sap.ui.define([
                 sTitle = this.getResourceBundle().getText("worklistTableTitle");
             }
             this.getModel("worklistView").setProperty("/worklistTableTitle", sTitle);
+
+            var x = this.byId("table").getAggregation("items");
+
+            for(var z = 0; z < x.length; z++){
+
+                var n = x[z].getBindingContext().getPath();
+
+                this.getModel().setProperty(n + "/PrecoNovo", "2");
+
+            }
+
+            //this.getModel().updateBindings(true);
         },
 
         /**
@@ -142,6 +157,112 @@ sap.ui.define([
             if (aTableSearchState.length !== 0) {
                 oViewModel.setProperty("/tableNoDataText", this.getResourceBundle().getText("worklistNoDataWithSearchText"));
             }
+        },
+
+        ajaxRequest: function (sQuery) {
+
+
+            var url = "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products" + sQuery;
+            var model = new sap.ui.model.odata.v2.ODataModel(url);
+            var oData = model.getProperty("UnitPrice");
+
+            //https://cors-anywhere.herokuapp.com/
+            var query = "https://services.odata.org/V2/Northwind/Northwind.svc/Products" + sQuery;
+
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: query,
+                    method: "GET",
+                    async: true,
+                    crossDomain: true,
+                    contentType: "application/json",
+                    dataType: "jsonp",
+
+                    headers: { "Access-Control-Allow-Origin": "*" },
+
+                    data: {
+                        //"query": sQuery
+                        //"pageNumber": 1,
+                        // "pageSize": 30,
+                        // "autoCorrect": true,
+                        //"safeSearch": false
+                    },
+
+                    success: (...args) => resolve(args),
+                    error: (...args) => reject(args),
+
+                });
+            });
+
+        },
+
+        getNewPrice: function () {
+
+            
+            //chama a função de consulta da API
+            var oRequest = this.ajaxRequest("(10)");
+            //trata o retorno: then é o callback de sucesso
+            oRequest.then(function (data, textStatus, jqXHR) {
+
+                var datinha = data;
+
+                //coletar a instancia do json model e seus dados 
+                //var oModel = this.getView().getModel("DataModel");
+                //var oData  = oModel.getData();
+
+                //zerar a lista para exibir novos resultados
+                //oData = {
+                //    cryptos: [],
+                //    dexs: []
+                //};
+
+                //oModel.setData(oData);
+
+                //var countCrypto = 0;
+                //var countDex = 0;
+                
+                //data[0].coins.forEach(element => {
+                //    oData.cryptos.push(element);
+                //    countCrypto++;
+                //});
+
+                //data[0].exchanges.forEach((element, index) => {
+                //    oData.dexs.push(element);
+                //    countDex++;
+                //});
+
+                //oModel.refresh();
+            }.bind(this),
+                function (jqXHR, textStatus, errorThrown) {
+                }.bind(this))
+        },
+
+        
+        onUpdateStockObjects : function () { 
+
+            this.getNewPrice();
+
+        },
+    
+        onUnlistObjects : function () {
+            var aSelectedProducts, i, sPath, oProduct, oProductId;
+
+            var itens3 = this.byId("table").getItems();
+
+			aSelectedProducts = this.byId("table").getSelectedItems();
+			if (aSelectedProducts.length) {
+				for (i = 0; i < aSelectedProducts.length; i++) {
+					oProduct = aSelectedProducts[i];
+					oProductId = oProduct.getBindingContext().getProperty("ProductID");
+					sPath = oProduct.getBindingContext().getPath();
+					//this.getModel().remove(sPath, {
+						//success : this._handleUnlistActionResult.bind(this, oProductId, true, i + 1, aSelectedProducts.length),
+						//error : this._handleUnlistActionResult.bind(this, oProductId, false, i + 1, aSelectedProducts.length)
+					//});
+				}
+			} else {
+				//this._showErrorMessage(this.getModel("i18n").getResourceBundle().getText("TableSelectProduct"));
+			}
         }
 
     });

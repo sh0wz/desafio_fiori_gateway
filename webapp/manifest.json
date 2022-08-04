@@ -24,6 +24,14 @@
           "localUri": "localService/metadata.xml",
           "odataVersion": "2.0"
         }
+      },
+      "invoiceRemote": {
+
+        "uri": "Northwind/V2/northwind/northwind.svc/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "2.0"
+        }
       }
     }
   },
