@@ -161,32 +161,13 @@ sap.ui.define([
 
         ajaxRequest: function (sQuery) {
 
-
-            var url = "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products" + sQuery;
-            var model = new sap.ui.model.odata.v2.ODataModel(url);
-            var oData = model.getProperty("UnitPrice");
-
-            //https://cors-anywhere.herokuapp.com/
-            var query = "https://services.odata.org/V2/Northwind/Northwind.svc/Products" + sQuery;
-
             return new Promise((resolve, reject) => {
                 $.ajax({
-                    url: query,
-                    method: "GET",
-                    async: true,
-                    crossDomain: true,
-                    contentType: "application/json",
-                    dataType: "jsonp",
-
-                    headers: { "Access-Control-Allow-Origin": "*" },
-
-                    data: {
-                        //"query": sQuery
-                        //"pageNumber": 1,
-                        // "pageSize": 30,
-                        // "autoCorrect": true,
-                        //"safeSearch": false
-                    },
+                    type: "GET",    
+                    url: "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(1)",    
+                    contentType: "application/json; charset=utf-8",  
+                    crossDomain: true,  
+                    dataType: "json",  
 
                     success: (...args) => resolve(args),
                     error: (...args) => reject(args),
@@ -241,6 +222,19 @@ sap.ui.define([
         onUpdateStockObjects : function () { 
 
             this.getNewPrice();
+            $.ajax({    
+                type: "GET",    
+                url: "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(1)",    
+                contentType: "application/json; charset=utf-8",  
+                crossDomain: true,  
+                dataType: "json",    
+                success: function (response) {    
+                    alert(JSON.stringify(response));    
+                },    
+                failure: function (response) {    
+                    alert(response.d);    
+                }    
+            }); 
 
         },
     
