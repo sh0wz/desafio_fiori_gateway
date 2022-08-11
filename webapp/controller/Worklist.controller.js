@@ -66,13 +66,18 @@ sap.ui.define([
             }
             this.getModel("worklistView").setProperty("/worklistTableTitle", sTitle);
 
-            var x = this.byId("table").getAggregation("items");
+            //var x = this.byId("table").getAggregation("items");
 
-            for(var z = 0; z < x.length; z++){
+            var y = this.byId("table").getBinding("items").aKeys;
 
-                var n = x[z].getBindingContext().getPath();
+            for(var z = 0; z < y.length; z++){
 
-                this.getModel().setProperty(n + "/PrecoNovo", "2");
+                //var n = x[z].getBindingContext().getPath();
+
+                //this.getModel().setProperty(n + "/PrecoNovo", "2");
+
+                this.getNewPrice(y[z]);
+                //this.getModel().setProperty("/" + y[z] + "/PrecoNovo", "3");
 
             }
 
@@ -112,7 +117,7 @@ sap.ui.define([
                 var sQuery = oEvent.getParameter("query");
 
                 if (sQuery && sQuery.length > 0) {
-                    aTableSearchState = [new Filter("IdSolicitacao", FilterOperator.Contains, sQuery)];
+                    aTableSearchState = [new Filter("DescProduto", FilterOperator.Contains, sQuery)];
                 }
                 this._applySearch(aTableSearchState);
             }
@@ -161,10 +166,13 @@ sap.ui.define([
 
         ajaxRequest: function (sQuery) {
 
+
+            var urlfinal =  "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(" + sQuery + ")";
+
             return new Promise((resolve, reject) => {
                 $.ajax({
                     type: "GET",    
-                    url: "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(1)",    
+                    url: urlfinal,    
                     contentType: "application/json; charset=utf-8",  
                     crossDomain: true,  
                     dataType: "json",  
@@ -177,42 +185,16 @@ sap.ui.define([
 
         },
 
-        getNewPrice: function () {
+        getNewPrice: function (sPath) {
 
-            
             //chama a função de consulta da API
-            var oRequest = this.ajaxRequest("(10)");
+            var oRequest = this.ajaxRequest(this.getModel().getProperty("/" + sPath + "/CodProdutoAntigo") );
             //trata o retorno: then é o callback de sucesso
             oRequest.then(function (data, textStatus, jqXHR) {
 
-                var datinha = data;
+                this.getModel().setProperty("/" + sPath + "/PrecoNovo", data[0].d.UnitPrice);
 
-                //coletar a instancia do json model e seus dados 
-                //var oModel = this.getView().getModel("DataModel");
-                //var oData  = oModel.getData();
 
-                //zerar a lista para exibir novos resultados
-                //oData = {
-                //    cryptos: [],
-                //    dexs: []
-                //};
-
-                //oModel.setData(oData);
-
-                //var countCrypto = 0;
-                //var countDex = 0;
-                
-                //data[0].coins.forEach(element => {
-                //    oData.cryptos.push(element);
-                //    countCrypto++;
-                //});
-
-                //data[0].exchanges.forEach((element, index) => {
-                //    oData.dexs.push(element);
-                //    countDex++;
-                //});
-
-                //oModel.refresh();
             }.bind(this),
                 function (jqXHR, textStatus, errorThrown) {
                 }.bind(this))
@@ -221,8 +203,7 @@ sap.ui.define([
         
         onUpdateStockObjects : function () { 
 
-            this.getNewPrice();
-            $.ajax({    
+            /**$.ajax({    
                 type: "GET",    
                 url: "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(1)",    
                 contentType: "application/json; charset=utf-8",  
@@ -234,7 +215,7 @@ sap.ui.define([
                 failure: function (response) {    
                     alert(response.d);    
                 }    
-            }); 
+            }); **/
 
         },
     
