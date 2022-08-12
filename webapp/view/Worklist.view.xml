@@ -1,55 +1,30 @@
-<mvc:View
-    controllerName="vdl.desafiogateway.desafiofiorigateway.controller.Worklist"
+<mvc:View controllerName="vdl.desafiogateway.desafiofiorigateway.controller.Worklist"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:semantic="sap.f.semantic">
 
-    <semantic:SemanticPage
-        id="page"
-        headerPinnable="false"
-        toggleHeaderOnTitleClick="false"
-        showFooter="true">
+    <semantic:SemanticPage id="page" headerPinnable="false" toggleHeaderOnTitleClick="false" showFooter="true">
 
         <semantic:titleHeading>
-            <Title
-                text="{i18n>worklistTitle}"
-                level="H2"/>
+            <Title text="{i18n>worklistTitle}" level="H2"/>
         </semantic:titleHeading>
 
         <semantic:content>
-            <Table
-                id="table"
-                width="auto"
-                mode="MultiSelect"
-                items="{
+            <Table id="table" width="auto" mode="MultiSelect" items="{
                     path: '/SolicitacaoSet',
                     sorter: {
                         path: 'IdSolicitacao',
                         descending: false
                     }
-                }"
-                noDataText="{worklistView>/tableNoDataText}"
-                busyIndicatorDelay="{worklistView>/tableBusyDelay}"
-                growing="true"
-                growingScrollToLoad="true"
-                growingThreshold="5"
-                updateFinished=".onUpdateFinished">
+                }" noDataText="{worklistView>/tableNoDataText}" busyIndicatorDelay="{worklistView>/tableBusyDelay}" growing="true" growingScrollToLoad="true" growingThreshold="5" updateFinished=".onUpdateFinished">
 
                 <headerToolbar>
                     <OverflowToolbar>
-                        <Title
-                            id="tableHeader"
-                            text="{worklistView>/worklistTableTitle}"
-                            level="H3"/>
+                        <Title id="tableHeader" text="{worklistView>/worklistTableTitle}" level="H3"/>
                         <ToolbarSpacer />
-                        <SearchField
-                            id="searchField"
-                            tooltip="{i18n>worklistSearchTooltip}"
-                            search=".onSearch">
+                        <SearchField id="searchField" tooltip="{i18n>worklistSearchTooltip}" search=".onSearch">
                             <layoutData>
-                                <OverflowToolbarLayoutData
-                                    maxWidth="200px"
-                                    priority="NeverOverflow"/>
+                                <OverflowToolbarLayoutData maxWidth="200px" priority="NeverOverflow"/>
                             </layoutData>
                         </SearchField>
                     </OverflowToolbar>
@@ -65,40 +40,38 @@
                     <Column>
                         <Text text="Descrição Produto"/>
                     </Column>
-                    <Column id="unitNumberColumn" >
+                    <Column id="unitNumberColumn" hAlign="End">
                         <Text text="{i18n>tableUnitNumberColumnTitle}" id="unitNumberColumnTitle"/>
                     </Column>
-                    <Column>
+                    <Column hAlign="End">
                         <Text text="Preço Novo"/>
                     </Column>
-                    <Column hAlign="End">
+                    <Column hAlign="Center">
                         <Text text="Data e Hora da Solicitação"/>
                     </Column>
                 </columns>
 
                 <items>
-                    <ColumnListItem
-                        type="Navigation"
-                        press=".onPress">
+                    <ColumnListItem type="Navigation" press=".onPress">
                         <cells>
-                            <ObjectIdentifier
-                                title="{IdSolicitacao}"/>
-                            <ObjectIdentifier
-                                title="{CodProduto}"/>
-                            <ObjectIdentifier
-                                title="{DescProduto}"/>
-                            <ObjectNumber
-                                number="{
+                            <ObjectIdentifier title="{IdSolicitacao}"/>
+                            <ObjectIdentifier title="{CodProduto}"/>
+                            <ObjectIdentifier title="{DescProduto}"/>
+                            <ObjectNumber number="{
                                     path: 'PrecoAtual',
                                     formatter: '.formatter.numberUnit'
                                 }" />
-                            <ObjectNumber
-                                number="{
+                            <ObjectNumber number="{
                                     path: 'PrecoNovo',
                                     formatter: '.formatter.numberUnit'
                                 }" />
-                            <ObjectIdentifier
-                                title="{DataHoraSolicitacao}"/>
+                            <ObjectIdentifier text="{
+                                        path: 'DataHoraSolicitacao',
+                                        type: 'sap.ui.model.type.DateTime',
+                                        formatOptions: {
+                                            style: 'short'
+                                        }
+                                    }" />
                         </cells>
                     </ColumnListItem>
                 </items>
@@ -109,11 +82,11 @@
             <semantic:SendEmailAction id="shareEmail" press=".onShareEmailPress"/>
         </semantic:sendEmailAction>
         <semantic:positiveAction>
-			<semantic:PositiveAction text="Aprovar" press=".onUpdateStockObjects"/>
-		</semantic:positiveAction>
-		<semantic:negativeAction>
-			<semantic:NegativeAction text="Rejeitar" press=".onUnlistObjects"/>
-		</semantic:negativeAction>
+            <semantic:PositiveAction id="btnAprovar" text="Aprovar" press=".onAlterarStatus"/>
+        </semantic:positiveAction>
+        <semantic:negativeAction>
+            <semantic:NegativeAction id="btnRejeitar" text="Rejeitar" press=".onAlterarStatus"/>
+        </semantic:negativeAction>
     </semantic:SemanticPage>
 
 </mvc:View>

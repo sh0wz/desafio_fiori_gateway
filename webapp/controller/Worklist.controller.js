@@ -3,7 +3,7 @@ sap.ui.define([
     "sap/ui/model/json/JSONModel",
     "../model/formatter",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
 ], function (BaseController, JSONModel, formatter, Filter, FilterOperator) {
     "use strict";
 
@@ -117,7 +117,8 @@ sap.ui.define([
                 var sQuery = oEvent.getParameter("query");
 
                 if (sQuery && sQuery.length > 0) {
-                    aTableSearchState = [new Filter("DescProduto", FilterOperator.Contains, sQuery)];
+                    aTableSearchState = [ new Filter("DescProduto", FilterOperator.Contains, sQuery) ,
+                                          new Filter("CodStatus", FilterOperator.EQ, "P") ];
                 }
                 this._applySearch(aTableSearchState);
             }
@@ -197,48 +198,96 @@ sap.ui.define([
 
             }.bind(this),
                 function (jqXHR, textStatus, errorThrown) {
+
+                   /* var obj = {
+
+                        Status: "R"
+
+                    };
+
+                    this.getModel().update("/" + sPath, obj, {
+                        sucess:function(Odata, response){
+
+                            debugger
+
+                        },
+                        error:function(Odata, response){
+
+                            debugger
+                            
+                        }
+
+                    }
+                    
+                    
+                    ); */
+
                 }.bind(this))
         },
 
         
-        onUpdateStockObjects : function () { 
+        onAlterarStatus : function (oEvent) { 
 
-            /**$.ajax({    
-                type: "GET",    
-                url: "https://cors-anywhere.herokuapp.com/https://services.odata.org/V2/Northwind/Northwind.svc/Products(1)",    
-                contentType: "application/json; charset=utf-8",  
-                crossDomain: true,  
-                dataType: "json",    
-                success: function (response) {    
-                    alert(JSON.stringify(response));    
-                },    
-                failure: function (response) {    
-                    alert(response.d);    
-                }    
-            }); **/
+            var codStatus, idSolicitacao, precoNovo, selectedLines, i, oProduct;
+            
+            codStatus = oEvent.getParameters().oSource.mProperties.type == "Accept" ? "A" : "R";
+
+			selectedLines = this.byId("table").getSelectedItems();
+			if (selectedLines.length) {
+				for (i = 0; i < selectedLines.length; i++) {
+					oProduct = selectedLines[i];
+					idSolicitacao = oProduct.getBindingContext().getProperty("IdSolicitacao");
+                    precoNovo = oProduct.getBindingContext().getProperty("PrecoNovo");
+                    this.alterarStatus(codStatus, idSolicitacao, precoNovo);
+				}
+			} 
+
+        },
+
+        alterarStatus : function ( codStatus, idSolicitacao, precoNovo) {
+
+            this.getModel().callFunction("/AlterarStatus",  
+            {
+                method: "POST",
+                urlParameters: {
+                        CodStatus      : codStatus,
+                        IdSolicitacao  : idSolicitacao,
+                        PrecoNovo      : precoNovo
+                },
+
+                sucess: function(oData, response){
+
+                    
+
+                },
+
+                error: function(response){
+
+                    
+                    
+                }
+
+            });
 
         },
     
-        onUnlistObjects : function () {
+        /*onUnlistObjects : function () {
             var aSelectedProducts, i, sPath, oProduct, oProductId;
-
-            var itens3 = this.byId("table").getItems();
-
 			aSelectedProducts = this.byId("table").getSelectedItems();
 			if (aSelectedProducts.length) {
 				for (i = 0; i < aSelectedProducts.length; i++) {
 					oProduct = aSelectedProducts[i];
 					oProductId = oProduct.getBindingContext().getProperty("ProductID");
 					sPath = oProduct.getBindingContext().getPath();
-					//this.getModel().remove(sPath, {
-						//success : this._handleUnlistActionResult.bind(this, oProductId, true, i + 1, aSelectedProducts.length),
-						//error : this._handleUnlistActionResult.bind(this, oProductId, false, i + 1, aSelectedProducts.length)
-					//});
+					this.getModel().remove(sPath, {
+					    success : this._handleUnlistActionResult.bind(this, oProductId, true, i + 1, aSelectedProducts.length),
+						error : this._handleUnlistActionResult.bind(this, oProductId, false, i + 1, aSelectedProducts.length)
+					});
 				}
 			} else {
-				//this._showErrorMessage(this.getModel("i18n").getResourceBundle().getText("TableSelectProduct"));
+				this._showErrorMessage(this.getModel("i18n").getResourceBundle().getText("TableSelectProduct"));
 			}
-        }
+        }*/
 
     });
 });
